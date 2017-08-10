@@ -23,6 +23,12 @@ namespace ComApi
             Console.WriteLine(session.UserName);
             obj.Method();
             Console.ReadLine();
+            
+            Console.WriteLine("the type is : " + MetaDataHelper.GetObjectTypeName(1033));
+         
+            // Console.WriteLine("the type is : " + ;
+            Console.ReadLine();
+
         }
         public IUserSession Connect(string loginName, string password)
         {
@@ -40,23 +46,42 @@ namespace ComApi
 
         public void Method()
         {
-            IDBObject obj = session.GetObject(748547);
-            Console.WriteLine("ProjectID of obj = " + obj.ProjectID.ToString() + "\n" + obj.Caption + "\n" + obj.SiteID + "\n" + obj.SubjectAreas);
-           // Console.ReadLine();
+            //    IDBObject obj = session.GetObject(748547);
+            //    Console.WriteLine("ProjectID of obj = " + obj.ProjectID.ToString() + "\n" + obj.Caption + "\n" + obj.SiteID + "\n" + obj.SubjectAreas);
+            //    Console.ReadLine();
+            //    IDBObjectCollection objCollection = session.GetObjectCollection(1052); // выбрать детали
 
-            //IDBObjectCollection objCollection = session.GetObjectCollection(1052); // выбрать детали
-            IDBObjectCollection objCollection = session.GetObjectCollection(-1); // выбрать все объекты
+
+
+            IDBObjectCollection objCollection = session.GetObjectCollection(1033); //1052 выбрать все объекты
+
             ConditionStructure[] conditions = new ConditionStructure[]
             {
-                new ConditionStructure("Заголовок объекта", RelationalOperators.StartString, "Кольцо", LogicalOperators.NONE, 0, true)
+                new ConditionStructure("Заголовок объекта", RelationalOperators.StartString, "", LogicalOperators.NONE, 0, true)
             };
 
-            ColumnDescriptor[] descriptor = new ColumnDescriptor[]
+            object[] columns = new object[]
             {
-                new ColumnDescriptor(ObligatoryObjectAttributes.F_OBJECT_ID, AttributeSourceTypes.Auto, ColumnContents.ID, ColumnNameMapping.Default, SortOrders.DESC, 0),
-                new ColumnDescriptor(ObligatoryObjectAttributes.CAPTION, AttributeSourceTypes.Auto, ColumnContents.Text, ColumnNameMapping.Default, SortOrders.ASC, 1),
+                ObligatoryObjectAttributes.F_OBJECT_ID, "Заголовок объекта"
             };
-            //Console.WriteLine("ObjCollection:" + objCollection.Select();
+            //object[] columns = null;
+            object[] sortColumns = new object[]
+            {
+                ObligatoryObjectAttributes.F_OBJECT_ID, "Заголовок объекта"
+            };
+
+            SortOrders[] order = new SortOrders[] { SortOrders.ASC, SortOrders.DESC };
+
+            DBRecordSetParams pars = new DBRecordSetParams(conditions, columns, sortColumns, order, 0, null, QueryConsts.Default, true, "MyTable");
+            
+            DataTable dt = objCollection.Select(pars);
+            for (int i = 0; i < dt.Rows.Count;  i++)
+            {
+                for (int j = 0; j < dt.Columns.Count; j++)
+                {
+                    Console.WriteLine( dt.Rows[i][j].ToString());
+                }
+            }
             Console.ReadLine();
         }
     }
